@@ -1,51 +1,28 @@
 import { ResponsiveLine } from '@nivo/line';
-import { useEffect, useState } from 'react';
-import { Client } from 'pg';
+import React, { useEffect, useState } from 'react';
 
 const TimeSeriesChart = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const client = new Client({
-        user: 'abc',
-        host: 'localhost',
-        database: 'bitcoin',
-        password: '12345',
-        port: 5432,
-      });
-
-      try {
-        await client.connect();
-        const res = await client.query('SELECT date, hodls FROM hodls ORDER BY date ASC');
-        const chartData = [
+    fetch('http://localhost:3001/hodls')
+      .then(response => response.json())
+      .then(hodls => {
+        const sortedHodls = hodls.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const formattedData = [
           {
             id: 'hodls data',
-            data: res.rows.map(row => ({ x: row.date.toISOString().split('T')[0], y: row.hodls })),
+            data: sortedHodls.map(hodl => ({
+              x: hodl.date,
+              y: hodl.hodls,
+            })),
           },
         ];
-        setData(chartData);
-      } catch (err) {
-        console.error('Error fetching data from PostgreSQL:', err);
-      } finally {
-        await client.end();
-      }
-    };
-
-    fetchData();
+        setData(formattedData);
+      })
+      .catch(error => console.error('Error fetching data:', error));
   }, []);
 
-  return (
-    <div style={{ height: 400 }}>
-      <ResponsiveLine
-        data={data}
-        // other props
-      />
-    </div>
-  );
-};
-
-function TimeSeriesChart() {
   return (
     <div style={{ height: 400 }}>
       <ResponsiveLine
@@ -94,27 +71,11 @@ function TimeSeriesChart() {
             translateX: 100,
             translateY: 0,
             itemsSpacing: 0,
-            itemDirection: 'left-to-right',
-            itemWidth: 80,
-            itemHeight: 20,
-            itemOpacity: 0.75,
-            symbolSize: 12,
-            symbolShape: 'circle',
-            symbolBorderColor: 'rgba(0, 0, 0, .5)',
-            effects: [
-              {
-                on: 'hover',
-                style: {
-                  itemBackground: 'rgba(0, 0, 0, .03)',
-                  itemOpacity: 1,
-                },
-              },
-            ],
           },
         ]}
       />
     </div>
   );
-}
+};
 
 export default TimeSeriesChart;
