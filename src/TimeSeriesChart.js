@@ -5,7 +5,7 @@ const TimeSeriesChart = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/hodls')
+    fetch('http://marcus-mini.is-very-nice.org:3001/hodls')
       .then(response => response.json())
       .then(hodls => {
         const sortedHodls = hodls.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -13,7 +13,7 @@ const TimeSeriesChart = () => {
           {
             id: 'hodls data',
             data: sortedHodls.map(hodl => ({
-              x: new Date(hodl.date).toLocaleDateString('en-US'),
+              x: new Date(hodl.date),
               y: hodl.hodls,
             })),
           },
@@ -30,7 +30,12 @@ const TimeSeriesChart = () => {
         enablePoints={false}
         enableGridX={false}
         margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-        xScale={{ type: 'point' }}
+        xScale={{                     
+          type: "time",
+          format: "%Y-%m-%d",
+          // useUTC: !1,
+          precision: "day" }}
+          xFormat= "time:%d/%m/%Y"
         yScale={{
           type: 'linear',
           min: 'auto',
@@ -45,11 +50,15 @@ const TimeSeriesChart = () => {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: 'Date',
+          // legend: 'Date',
           legendOffset: 36,
-          legendPosition: 'middle',
-          tickValues: data[0]?.data.length > 10 ? 10 : data[0]?.data.length, // Limit to 10 ticks
-        
+          legendPosition: 'middle',                    
+          format: "%d/%m/%Y",
+          tickRotation: -38,
+          tickValues: data[0]?.data.length > 10 ? 10 : data[0]?.data.length, 
+          // legend: "time ",
+          legendOffset: -12
+
         }}
         axisLeft={{
           orient: 'left',
@@ -57,7 +66,7 @@ const TimeSeriesChart = () => {
           tickPadding: 5,
           tickRotation: 0,
           legend: '# of Hodlers',
-          legendOffset: -40,
+          legendOffset: -60,
           legendPosition: 'middle',
         }}
         colors={{ scheme: 'nivo' }}
