@@ -13,7 +13,7 @@ const TimeSeriesChart = () => {
           {
             id: 'hodls data',
             data: sortedHodls.map(hodl => ({
-              x: hodl.date,
+              x: new Date(hodl.date).toLocaleDateString('en-US'),
               y: hodl.hodls,
             })),
           },
@@ -27,6 +27,8 @@ const TimeSeriesChart = () => {
     <div style={{ height: 400 }}>
       <ResponsiveLine
         data={data}
+        enablePoints={false}
+        enableGridX={false}
         margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
         xScale={{ type: 'point' }}
         yScale={{
@@ -43,16 +45,18 @@ const TimeSeriesChart = () => {
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: 'Time',
+          legend: 'Date',
           legendOffset: 36,
           legendPosition: 'middle',
+          tickValues: data[0]?.data.length > 10 ? 10 : data[0]?.data.length, // Limit to 10 ticks
+        
         }}
         axisLeft={{
           orient: 'left',
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
-          legend: 'Value',
+          legend: '# of Hodlers',
           legendOffset: -40,
           legendPosition: 'middle',
         }}
@@ -63,16 +67,16 @@ const TimeSeriesChart = () => {
         pointBorderColor={{ from: 'serieColor' }}
         pointLabelYOffset={-12}
         useMesh={true}
-        legends={[
-          {
-            anchor: 'bottom-right',
-            direction: 'column',
-            justify: false,
-            translateX: 100,
-            translateY: 0,
-            itemsSpacing: 0,
-          },
-        ]}
+        // legends={[
+        //   {
+        //     anchor: 'bottom-right',
+        //     direction: 'column',
+        //     justify: false,
+        //     translateX: 100,
+        //     translateY: 0,
+        //     itemsSpacing: 0,
+        //   },
+        // ]}
       />
     </div>
   );
