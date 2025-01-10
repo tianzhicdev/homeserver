@@ -1,19 +1,49 @@
 import { ResponsiveLine } from '@nivo/line';
+import { useEffect, useState } from 'react';
+import { Client } from 'pg';
 
-const data = [
-  {
-    id: 'dummy data',
-    data: [
-      { x: '2023-01-01', y: 7 },
-      { x: '2023-01-02', y: 5 },
-      { x: '2023-01-03', y: 11 },
-      { x: '2023-01-04', y: 9 },
-      { x: '2023-01-05', y: 12 },
-      { x: '2023-01-06', y: 16 },
-      { x: '2023-01-07', y: 13 },
-    ],
-  },
-];
+const TimeSeriesChart = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const client = new Client({
+        user: 'abc',
+        host: 'localhost',
+        database: 'bitcoin',
+        password: '12345',
+        port: 5432,
+      });
+
+      try {
+        await client.connect();
+        const res = await client.query('SELECT date, hodls FROM hodls ORDER BY date ASC');
+        const chartData = [
+          {
+            id: 'hodls data',
+            data: res.rows.map(row => ({ x: row.date.toISOString().split('T')[0], y: row.hodls })),
+          },
+        ];
+        setData(chartData);
+      } catch (err) {
+        console.error('Error fetching data from PostgreSQL:', err);
+      } finally {
+        await client.end();
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div style={{ height: 400 }}>
+      <ResponsiveLine
+        data={data}
+        // other props
+      />
+    </div>
+  );
+};
 
 function TimeSeriesChart() {
   return (
