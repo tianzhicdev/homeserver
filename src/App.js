@@ -1,15 +1,19 @@
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import TimeSeriesChart from './TimeSeriesChart';
-
+import Dashboard from './Dashboard'; 
 function App() {
   return (
-    <div className="App">
-      {/* <header className="App-header">
-      </header> */}
-      <main>
-        <TimeSeriesChart />
-      </main>
-    </div>
+    <Router>
+      <div className="App">
+        <main>
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<TimeSeriesChart />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 
