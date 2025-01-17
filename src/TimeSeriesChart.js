@@ -6,7 +6,7 @@ const TimeSeriesChart = () => {
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    fetch('http://marcus-mini.is-very-nice.org:3001/hodls')
+    fetch('http://192.168.0.49:3001/hodls')
       .then(response => response.json())
       .then(hodls => {
         const sortedHodls = hodls.sort((a, b) => new Date(a.date) - new Date(b.date));
